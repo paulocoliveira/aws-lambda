@@ -11,7 +11,11 @@ PYTHON_36_RUNTIME = "python3.6"
 PYTHON_LAMBDA_NAME = "PythonLambdaFunction"
 
 print(lambda_client(LOCATION))
-print(create_access_policy_for_lambda())
-print(create_execution_role_for_lambda(LAMBDA_ROLE))
+policy_response = create_access_policy_for_lambda()
+print(policy_response)
+LAMBDA_ACCESS_POLICY_ARN = policy_response['Policy']['Arn']
+role_response = create_execution_role_for_lambda(LAMBDA_ROLE)
+print(role_response)
+LAMBDA_ROLE_ARN = role_response['Role']['Arn']
 print(attach_access_policy_to_execution_role(LAMBDA_ROLE, LAMBDA_ACCESS_POLICY_ARN))
 print(deploy_lambda_function(PYTHON_LAMBDA_NAME, PYTHON_36_RUNTIME, LAMNDA_HANDLER, LAMBDA_ROLE_ARN, "python_lambda", LOCATION, LAMBDA_TIMEOUT, LAMBDA_MEMORY))

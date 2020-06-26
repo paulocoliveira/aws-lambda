@@ -36,7 +36,7 @@ def create_access_policy_for_lambda():
         Description="Allows lambda function to access S3 resources."
     )
 
-def create_execution_role_for_lambda(lambda_role, lambda_access_policy_arn):
+def create_execution_role_for_lambda(lambda_role):
     lambda_execution_assumption_role = {
         "Version": "2012-10-17",
         "Statement": [
@@ -58,22 +58,22 @@ def create_execution_role_for_lambda(lambda_role, lambda_access_policy_arn):
 
 def attach_access_policy_to_execution_role(lambda_role, lambda_access_policy_arn):
      return iam_client().attach_role_policy(
-         RoleName=lambda_role
+         RoleName=lambda_role,
          PolicyArn=lambda_access_policy_arn 
      )
 
 def deploy_lambda_function(function_name, runtime, handler, role_arn, source_folder, location, lambda_timeout, lambda_memory):
     folder_path = path.join(path.dirname(path.abspath(__file__)), source_folder)
-    zip_file = Utils.make_zip_file_bites(path=folder_path)
-    retun lambda_client(location).create_function(
-        functionName=function_name,
-        RunTime=runtime,
+    zip_file = Utils.make_zip_file_bytes(path=folder_path)
+    return lambda_client(location).create_function(
+        FunctionName=function_name,
+        Runtime=runtime,
         Role=role_arn,
         Handler=handler,
         Code={
-            "Zipfile": zip_file
+            "ZipFile": zip_file
         },
         Timeout=lambda_timeout,
-        MorySize=lambda_memory,
+        MemorySize=lambda_memory,
         Publish=False
     )
